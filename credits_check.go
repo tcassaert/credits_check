@@ -77,7 +77,7 @@ func getUserPermission(token, url string) int {
 
 	if err != nil {
 		log.Fatal("Unable to get the user permissions")
-		return 500
+		return 200
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
@@ -86,7 +86,7 @@ func getUserPermission(token, url string) int {
 
 	if err != nil {
 		log.Fatal("Unable to get the user permissions")
-		return 500
+		return 200
 	}
 
 	if resp.StatusCode != 200 {
@@ -99,7 +99,7 @@ func getUserPermission(token, url string) int {
 
 	if err != nil {
 		log.Fatal("Unable to get the user permissions")
-		return 500
+		return 200
 	}
 
 	var userPermission userPermission
@@ -108,7 +108,7 @@ func getUserPermission(token, url string) int {
 
 	if jsonErr != nil {
 		log.Fatal("Unable to get the user permissions")
-		return 500
+		return 200
 	}
 
 	if userPermission.Execution {
