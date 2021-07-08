@@ -10,15 +10,16 @@ import (
 	"strings"
 )
 
-// Config the plugin configuration.
+// The plugin configuration.
 type config struct {
-	Url string `json:"url"`
+	CreditsCheckBackend string `json:"credits_check_backend"`
 }
 
 type creditsCheck struct {
 	client http.Client
 	name   string
 	next   http.Handler
+	url    string
 }
 
 type userPermission struct {
@@ -42,6 +43,7 @@ func New(ctx context.Context, next http.Handler, config *config, name string) (h
 		client: client,
 		next:   next,
 		name:   name,
+		url:    config.CreditsCheckBackend,
 	}, nil
 }
 
@@ -54,7 +56,7 @@ func (cc *creditsCheck) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		if strings.Contains(req.Header.Get("Authorization"), "Bearer ") {
 			token := strings.Split(req.Header.Get("Authorization"), "Bearer ")[1]
 
-			returnCode := getUserPermission(token)
+			returnCode := getUserPermission(token, cc.url)
 
 			if returnCode == 200 {
 				rw.WriteHeader(returnCode)
@@ -69,10 +71,9 @@ func (cc *creditsCheck) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func getUserPermission(token string) int {
+func getUserPermission(token, url string) int {
 	client := &http.Client{}
-	//	req, err := http.NewRequest("GET", "http://marketplace-cost-api-dev.rscloud.int.vito.be/user/permissions", nil)
-	req, err := http.NewRequest("GET", "http://localhost:3000/user/permissions", nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/user/permissions", url), nil)
 
 	if err != nil {
 		log.Fatal("Unable to get the user permissions")
