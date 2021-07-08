@@ -1,5 +1,5 @@
 ---
-displayName: credits-check
+displayName: Credits Check
 type: middleware
 import: github.com/tcassaert/traefik-plugin-credits_check
 summary: 'Check credits of user before allowing the request'
