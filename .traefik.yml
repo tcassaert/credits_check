@@ -1,7 +1,7 @@
 ---
 displayName: credits-check
 type: middleware
-import: github.com/tcassaert/credits_check
+import: github.com/tcassaert/traefik-plugin-credits_check
 summary: 'Check credits of user before allowing the request'
 testData:
   foo: 'bar'
