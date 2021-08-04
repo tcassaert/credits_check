@@ -2,6 +2,7 @@ package credits_check
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -33,6 +34,7 @@ func CreateConfig() *config {
 
 // Initialize plugin.
 func New(ctx context.Context, next http.Handler, config *config, name string) (http.Handler, error) {
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	client := http.Client{
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
@@ -76,7 +78,7 @@ func getUserPermission(token, url string) int {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://%s/user/permissions", url), nil)
 
 	if err != nil {
-		log.Fatal("Unable to get the user permissions")
+		log.Println("Failed to reach credits check backend ")
 		return 200
 	}
 
@@ -85,7 +87,7 @@ func getUserPermission(token, url string) int {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatal("Unable to get the user permissions")
+		log.Println("Failed to reach credits check backend")
 		return 200
 	}
 
@@ -98,20 +100,20 @@ func getUserPermission(token, url string) int {
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Fatal("Unable to get the user permissions")
+		log.Println(err)
 		return 200
 	}
 
-	var userPermission userPermission
+	var perm userPermission
 
-	jsonErr := json.Unmarshal(body, &userPermission)
+	jsonErr := json.Unmarshal(body, &perm)
 
 	if jsonErr != nil {
-		log.Fatal("Unable to get the user permissions")
+		log.Println(jsonErr)
 		return 200
 	}
 
-	if userPermission.Execution {
+	if perm.Execution {
 		return 200
 	} else {
 		return 402
