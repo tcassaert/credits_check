@@ -92,7 +92,8 @@ func getUserPermission(token, url string) int {
 	}
 
 	if resp.StatusCode != 200 {
-		return resp.StatusCode
+		log.Printf("Backend responded with a %d ", resp.StatusCode)
+		return 200
 	}
 
 	defer resp.Body.Close()
